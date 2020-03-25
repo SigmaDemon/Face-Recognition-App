@@ -7,7 +7,6 @@ Promise.all([
   faceapi.nets.faceExpressionNet.loadFromUri('/models')
 ]).then(startVideo);
 
-// This function makes the browser allow access to the camera and displays our image through the device's camera
 function startVideo() {
   navigator.getUserMedia(
     { video: {} },
@@ -23,16 +22,13 @@ video.addEventListener('play', () => {
   faceapi.matchDimensions(canvas, displaySize);
   setInterval(async () => {
     const detections = await faceapi
-      .detectAllFaces(video, new faceapi.tinyFaceDetectorOptions())
+      .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
       .withFaceLandmarks()
       .withFaceExpressions();
-    const resizedDetections = faceapi.resizedDetections(
-      detections,
-      displaySize
-    );
+    const resizedDetections = faceapi.resizeResults(detections, displaySize);
     canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
     faceapi.draw.drawDetections(canvas, resizedDetections);
-    faceapi.drawFaceLandmarks(canvas, resizedDetections);
+    faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
     faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
   }, 100);
 });
